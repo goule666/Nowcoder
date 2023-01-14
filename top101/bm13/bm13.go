@@ -7,6 +7,8 @@ leetCodeUrl https://www.nowcoder.com/practice/3fed228444e740c8be66232ce8b87c2f?t
 
 package main
 
+import "container/list"
+
 type ListNode struct {
 	Val  int
 	Next *ListNode
@@ -16,44 +18,34 @@ func isPail(head *ListNode) bool {
 	if head == nil || head.Next == nil {
 		return true
 	}
+	//判断奇偶性 如果fast不等于nil 则为奇数
 	var slow, fast = head, head
 	for fast != nil && fast.Next != nil {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-	var leftStart, rightStart = head, &ListNode{}
-	if fast == nil {
-		//偶数
-		rightStart = slow
-	} else {
-		//奇数
-		rightStart = slow.Next
-	}
-	rightStart = reverse(rightStart)
-
-	for leftStart != nil && rightStart != nil {
-		if leftStart.Val != rightStart.Val {
-			return false
+	queue := list.New()
+	for head != nil {
+		if fast != nil && head == slow {
+			//如果是奇数的话 跳过中间那个值
+			head = head.Next
+			continue
 		}
-		leftStart = leftStart.Next
-		rightStart = rightStart.Next
+		node := queue.Back()
+		if node != nil {
+			if node.Value == head.Val {
+				//move
+				queue.Remove(node)
+			} else {
+				//add
+				queue.PushBack(head.Val)
+			}
+		} else {
+			queue.PushBack(head.Val)
+		}
+		head = head.Next
 	}
-	return true
-}
-
-func reverse(node *ListNode) *ListNode {
-	if node == nil || node.Next == nil {
-		return node
-	}
-	var pre *ListNode
-	var cur = node
-	for cur != nil {
-		temp := cur.Next
-		cur.Next = pre
-		pre = cur
-		cur = temp
-	}
-	return pre
+	return queue.Len() == 0
 }
 
 func main() {
