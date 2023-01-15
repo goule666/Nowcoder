@@ -16,20 +16,13 @@ func deleteDuplicates(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
-	var pre *ListNode
 	var cur = head
-	for cur != nil {
-		if pre == nil {
-			pre = cur
+	for cur != nil && cur.Next != nil {
+		if cur.Val == cur.Next.Val {
+			cur.Next = cur.Next.Next
 		} else {
-			//compare
-			if cur.Val == pre.Val {
-				pre.Next = cur.Next
-			} else {
-				pre = pre.Next
-			}
+			cur = cur.Next
 		}
-		cur = cur.Next
 	}
 	// write code here
 	return head
